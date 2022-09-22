@@ -25,19 +25,43 @@
       </div></label
     >
 
-    <Button :disabled="data.image == null" class="text-xl mt-10">
-      Start Detecting
+    <Button
+      @click="detect"
+      :disabled="data.image == null"
+      class="text-xl mt-10"
+    >
+      {{ data.btnLabel }}
     </Button>
+
+    <Login :open="modalSwitch.login" :key="modalSwitch.loginKey"></Login>
   </div>
 </template>
 
 <script setup>
 import Button from "../components/Button.vue";
 import { reactive, ref } from "vue";
+import { useInf } from "../stores/inf";
+// import Modal from "../components/Modal.vue";
+
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  DialogDescription,
+} from "@headlessui/vue";
+import Login from "../components/Login.vue";
+
+const inf = useInf();
 
 const data = reactive({
   image: null,
   localURL: null,
+  btnLabel: "Start Detecting",
+});
+
+const modalSwitch = reactive({
+  login: false,
+  loginKey: 1,
 });
 
 function onImageUpload(e) {
@@ -46,4 +70,16 @@ function onImageUpload(e) {
 
   data.localURL = URL.createObjectURL(data.image);
 }
+
+function detect() {
+  if (data.image !== null) {
+    if (inf.loggedIn == false) {
+      modalSwitch.login = true;
+      modalSwitch.loginKey = Math.random();
+    } else {
+      data.btnLabel = "Processing";
+    }
+  }
+}
+//
 </script>
